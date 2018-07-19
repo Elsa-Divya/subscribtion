@@ -1,7 +1,9 @@
 import { OrdersPage } from '../../pages/orders/orders';
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { NavController, Content } from 'ionic-angular';
 import { CatalogPage } from '../catalog/catalog';
+import { PromotionsPage } from '../promotions/promotions';
+import { InventoryPage } from '../inventory/inventory';
 
 
 
@@ -11,6 +13,7 @@ import { CatalogPage } from '../catalog/catalog';
 })
 
 export class HomePage {
+  @ViewChild(Content) content: Content;
   ordersList : any[];
   settings:any;
   data:any;
@@ -25,6 +28,14 @@ export class HomePage {
 
   uploadCatalog(){
     this.navCtrl.push(CatalogPage);
+  }
+
+  promotions(){
+    this.navCtrl.push(PromotionsPage);
+  }
+
+  inventory(){
+    this.navCtrl.push(InventoryPage);
   }
 
 }

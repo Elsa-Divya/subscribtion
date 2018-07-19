@@ -18,7 +18,7 @@
         
          <ion-card-content>
            <ion-card-title>
-           <button ion-button block><h2 ion-text color="secondary" text-center (click)="getOrderDetails()">Track Orders</h2></button> 
+           <button ion-button block (click)="getOrderDetails()"><h2 ion-text color="secondary" text-center >Track Orders</h2></button> 
            </ion-card-title>
          </ion-card-content>
        </ion-card>
@@ -31,11 +31,37 @@
        
         <ion-card-content>
           <ion-card-title>
-          <button ion-button block><h2 ion-text color="secondary" text-center (click)="uploadCatalog()">Upload Catalog</h2></button> 
+          <button ion-button block (click)="uploadCatalog()"><h2 ion-text color="secondary" text-center >Upload Catalog</h2></button> 
           </ion-card-title>
         </ion-card-content>
       </ion-card>
     </ion-col>
+    <ion-col col-md-3 col-lg-3 col-xs-6 col-sm-6 align-self-center >
+      <ion-card>
+        <ion-col col-12 align-self-center>
+           <img src="../assets/imgs/promotion.png" class="dashboard-icons"/>
+        </ion-col>
+       
+        <ion-card-content>
+          <ion-card-title>
+          <button ion-button block (click)="promotions()"><h2 ion-text color="secondary" text-center>Banners</h2></button> 
+          </ion-card-title>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col col-md-3 col-lg-3 col-xs-6 col-sm-6 align-self-center >
+        <ion-card>
+          <ion-col col-12 align-self-center>
+             <img src="../assets/imgs/inventory.png" class="dashboard-icons"/>
+          </ion-col>
+         
+          <ion-card-content>
+            <ion-card-title>
+            <button ion-button block (click)="inventory()"><h2 ion-text color="secondary" text-center>Required Stock</h2></button> 
+            </ion-card-title>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
    </ion-row>
  </ion-grid>
 

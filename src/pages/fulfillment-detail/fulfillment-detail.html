@@ -13,17 +13,17 @@
 </ion-header>
 
 
-<ion-content padding>
-  <ion-card class="content-scrolls">
+<ion-content>
+  <ion-card class="content-scrolls" no-padding>
     <ion-card-header>
-      <ion-row align-items-center>
+      <ion-row align-items-center no-padding no-margin>
         <ion-col col-md-6 col-lg-6 align-self-center class="highlight-card">
           <ion-item>
-            
-              <ion-avatar>
-                <img src="../assets/imgs/admin.png">
-              </ion-avatar>
-           
+
+            <ion-avatar>
+              <img src="../assets/imgs/admin.png">
+            </ion-avatar>
+
           </ion-item>
           <ion-item>
             <p ion-text color="secondary">
@@ -32,39 +32,61 @@
             <br>
             <p ion-text color="light">{{mobileNumber}}</p>
           </ion-item>
-          <ion-item >
+          <ion-item>
             <p ion-text color="secondary">Fulfillment Id : #{{fulfillmentId}}</p>
           </ion-item>
           <ion-item>
             <button ion-button outline color="secondary">Slot {{slot}}</button>
           </ion-item>
         </ion-col>
-        <ion-col  col-md-6 col-lg-6 align-self-center>
-          <ion-list>
+        <ion-col col-md-6 col-lg-6 align-self-start>
             <ion-item>
-              <p item-start>Address Line 1 : {{address.addressLine1}}</p>
-            </ion-item>
-            <ion-item>
-              <p item-start>Address Line 2 : {{address.addressLine2}}</p>
-            </ion-item>
-            <ion-item>
-              <p item-start>Landmark : {{landMark}}</p>
-            </ion-item>
-            <ion-item>
-              <p item-start>City : {{city}}</p>
-            </ion-item>
-            <ion-item>
-              <p item-start>State : {{state}}</p>
-            </ion-item>
-          </ion-list>
-        </ion-col>
+
+                <ion-avatar>
+                  <img src="../assets/imgs/track.png">
+                 
+                </ion-avatar>
+                <br>
+                <p ion-text color="secondary"><b> Address</b></p>
+              </ion-item>
+           
+            <br>
+            <p ion-text text-lg text-wrap text-uppercase>Line1 : <b>{{address.addressLine1}}</b></p>
+            <p ion-text text-lg text-wrap text-uppercase>Line2 : <b>{{address.addressLine2}}</b></p>
+            <p ion-text text-lg text-wrap text-uppercase>Landmark : <b>{{address.landmark}}</b></p>
+            <p ion-text text-lg text-wrap text-uppercase>City: <b>{{address.city}} </b></p>
+            <p ion-text text-lg text-wrap text-uppercase>State:<b>{{address.state}}</b></p>
+           
+            
+          </ion-col>
       </ion-row>
     </ion-card-header>
     <ion-card-content>
-
-      <ng2-smart-table [settings]="settings" [source]="subscriptionOrderItems" style="overflow-x: auto"></ng2-smart-table>
-
-
+      <p-table #dt [columns]="cols" [value]="subscriptionOrderItems">
+        <ng-template pTemplate="caption">
+          <div style="text-align: right">
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value,'contains')"
+              style="width:auto">
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-fulfillment>
+          <tr>
+            <td>{{fulfillment.barcodeId}}</td>
+            <td>{{fulfillment.sku}}</td>
+            <td>{{fulfillment.name}}</td>
+            <td>{{fulfillment.quantity}}</td>
+            <td>Rs.{{fulfillment.amount}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </ion-card-content>
   </ion-card>
 </ion-content>

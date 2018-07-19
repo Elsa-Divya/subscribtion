@@ -1,10 +1,8 @@
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HttpServiceProvider } from '../http-service/http-service';
 import * as Constants from '../../config'
-import { IfObservable } from 'rxjs/observable/IfObservable';
-import { Observable } from 'rxjs/Observable';
-
+import * as moment from 'moment';
 
 
 
@@ -17,23 +15,26 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class FulfillmentDetailsProvider {
   ordersTableData:any;
+  disableFulfillment:boolean=false;
 
-  constructor(public http:HttpServiceProvider) {
+  constructor(public http:HttpServiceProvider, public _http : HttpClient) {
     console.log('Hello FulfillmentDetailsProvider Provider');
     this.ordersTableData = []; 
   }
 
 
+
+
   getFulfillmentDetails(object){
   
    return this.http.post("v2/dashboard/subscription/fetchFulfillments",object)
-
     
   }
 
   generateFulfillmentTableData(fulfilmentList){
    
-    
+    this.ordersTableData = [];
+    let now = moment();
     fulfilmentList.forEach(data => {
       let obj:any = {};
       obj.shopId = data.fulfillment.shopId;
@@ -48,6 +49,14 @@ export class FulfillmentDetailsProvider {
       obj.address = data.address;
       obj.subscriptionOrderItems = data.subscriptionOrderItems;
       obj.fulfillmentId = data.fulfillment.id;
+      obj.paymentMethod = data.paymentMethod;
+      obj.subscriptionOrderId = data.subscriptionOrderId;
+      if(moment(data.fulfillment.deliveryDate).isAfter(now)){
+        obj.disable = true;
+       }else{
+         obj.disable=false;
+       }
+       obj.orderSentToMerchant = data.fulfillment.orderSentToMerchant;
       this.ordersTableData.push(obj);
 
     });
@@ -56,16 +65,11 @@ export class FulfillmentDetailsProvider {
   }
 
   updateFulfillmentStatus(order){
-    return this.http.post("v2/dashboard/subscription/fulfillment/update/"+order.fulfillmentId+"/"+order.status,{})
-    
+    return this.http.post("v2/dashboard/subscription/fulfillment/update/"+order.fulfillmentId+"/subscription/"+order.subscriptionId+"/"+order.status,{})
   }
 
   downloadFullfillmentReport(data){
-    return this.http.post("v2/dashboard/subscription/fetchFulfillments/download",data)
+    return this._http.post(Constants.URL+"/v2/dashboard/subscription/fetchFulfillments/download",data,{responseType: 'text'})
   }
-
-
-
-
 
 }

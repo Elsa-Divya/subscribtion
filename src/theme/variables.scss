@@ -15,6 +15,7 @@ $app-direction: ltr;
 @import "ionic.globals";
 
 
+
 // Shared Variables
 // --------------------------------------------------
 // To customize the look and feel of this app, you can override
@@ -70,6 +71,8 @@ $button-ios-text-color:color($colors,secondary);
 .card-content-ios{
   overflow: auto;
 }
+$toast-ios-background: color($colors,secondary);
+$toast-md-background:color($colors,secondary);
 
 
 // App Material Design Variables
@@ -126,49 +129,18 @@ $button-ios-text-color:color($colors,secondary);
 .smart-table-container{ 
   overflow-x: scroll;
 }
-tbody {
-  text-align:start;
-  font-size: 14px;
-  color: color($colors,dark);
-  
-
- 
-}
-thead>tr{
-  font-size: 14px;
-  color: color($colors,primary);
- 
-}
-tbody>td{
-  margin: 5px;
-}
 
 .content-scrolls{
 overflow: auto;
 }
 
-ng2-smart-table-pager{
-  font-weight: bold;
-  color: color($colors,primary);
 
-}
-nav.ng2-smart-pagination-nav{
-margin: auto;
-}
-
-.pagination>.active>.span{
-  background: color($colors,secondary);
-}
-
-a.ng2-smart-page-link.page-link{
-  margin: auto;
-  padding: 5px;
-  color: color($colors,dark);
-}
 
 .card-content-md{
   overflow: auto;
 }
+
+
 
 // App Windows Variables
 // --------------------------------------------------

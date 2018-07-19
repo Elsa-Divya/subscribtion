@@ -1,15 +1,13 @@
-import { Component, ViewChild, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { FulfillmentDetailsProvider } from '../../providers/fulfillment-details/fulfillment-details';
-import { ViewCell } from '../../../node_modules/ng2-smart-table';
-import { ButtonViewPage } from '../button-view/button-view';
-import { SubscribtiondetailPage } from '../subscribtiondetail/subscribtiondetail';
-import { DaterangePickerComponent } from 'ng2-daterangepicker';
 import * as moment from 'moment';
 import { LoaderProvider } from '../../providers/loader/loader';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ScrollProvider } from '../../providers/scroll/scroll';
+import { ErrorHandlerServiceProvider } from '../../providers/error-handler-service/error-handler-service';
+import { ModalProvider } from '../../providers/modal/modal';
 
 
 /**
@@ -26,16 +24,17 @@ import { ScrollProvider } from '../../providers/scroll/scroll';
 })
 export class OrdersPage {
   @ViewChild(Content) content: Content;
-  @ViewChild(DaterangePickerComponent)
-
-  private picker: DaterangePickerComponent;
 
   daterange: any = {
-    start: moment(),
+    start: moment().subtract(1, 'days'),
     end: moment(),
     label: ''
   };
 
+  options : any = {
+    startDate : moment().subtract(1, 'days'),
+    endDate : moment(),
+  }
 
 
 
@@ -47,55 +46,8 @@ export class OrdersPage {
   showfilter: boolean = false;
   shopIds:any[]=[];
   selectedShopIds:any[]=[];
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, public storage: StorageProvider, private orders: FulfillmentDetailsProvider, private loader: LoaderProvider, private scroll: ScrollProvider) {
-    this.settings = {
-      columns: {
-        shopId: {
-          title: 'Shop Id'
-        },
-        subscriptionId: {
-          title: 'Subscribtion Id',
-          type: 'custom',
-          renderComponent: SubscribtiondetailPage,
-          onComponentInitFunction(instance) {
-            instance.save.subscribe(row => {
-              console.log(row);
-            });
-          }
-        },
-        customerId: {
-          title: 'Customer Id'
-        },
-        customerName: {
-          title: 'Name'
-        },
-        mobileNumber: {
-          title: 'Mobile No'
-        },
-        deliveryDate: {
-          title: 'Delivery Date'
-        },
-        slot: {
-          title: 'Slot'
-        },
-        city: {
-          title: 'City'
-        },
-        status: {
-          title: 'Status',
-          type: 'custom',
-          renderComponent: ButtonViewPage,
-          onComponentInitFunction(instance) {
-            instance.save.subscribe(row => {
-              console.log(row);
-            });
-          }
-        }
-      },
-      actions: false
-    };
-
+  cols:any[]=[];
+  constructor(public navCtrl: NavController, public navParams: NavParams, public storage: StorageProvider, private orders: FulfillmentDetailsProvider, private loader: LoaderProvider, private scroll: ScrollProvider,private errorHandler:ErrorHandlerServiceProvider,private modal:ModalProvider) {
     this.fulfillmentData = [];
 
   }
@@ -109,11 +61,13 @@ export class OrdersPage {
     this.shopIds= [];
     this.storage.getItem('admin').then((data: any) => {
       this.shopList = data.admin.shopList;
+      console.log(this.shopList);
       this.shopList.forEach(shop => {
         this.shopIds.push(shop.shopId);
       });
       this.selectedShopIds = this.shopIds;
       this.search(this.shopIds);
+      console.log(this.daterange);
     })
   }
 
@@ -126,13 +80,32 @@ export class OrdersPage {
       "fromDate": moment(this.daterange.start.toDate()).format("YYYY-MM-DD"),
       "toDate": moment(this.daterange.end.toDate()).format("YYYY-MM-DD")
     }
+
+    // disable future fulfillment
+   
     this.orders.getFulfillmentDetails(obj).subscribe((data: any) => {
+      this.cols = [
+        { field: 'subscriptionId', header: 'ID'},
+        { field: 'subscriptionOrderId',header:'Order Id'},
+        { field: 'customerName', header:'Customer Name'},
+        { field: 'mobileNumber', header:'Mobile Number'},
+        { field: 'deliveryDate', header: 'Delivery Date'},
+        { field: 'slot', header: 'Slot' },
+        { field: 'paymentMethod', header: 'Payment Method'},
+        { field: 'city', header: 'City'},
+        { field: 'orderSentToMerchant', header:'Order Sent To Merchant'},
+        { field: 'status', header: 'Status' }
+        
+    ];
       this.fulfillmentData = this.orders.generateFulfillmentTableData(data);
       console.log(this.fulfillmentData);
+      
+      
       this.scroll.scrollTo('#order-detail');
       
     }, (err: HttpErrorResponse) => {
-      alert("Something went wrong !");
+      this.errorHandler.error(err);
+     // alert("Something went wrong !");
     }, () => {
       this.loader.hide();
     })
@@ -141,7 +114,7 @@ export class OrdersPage {
 
   }
   public selectedDate(value: any) {
-    // this is the date the iser selected
+    // this is the date the user selected
     console.log(value);
 
     this.daterange.start = value.start;
@@ -162,22 +135,16 @@ export class OrdersPage {
     let formData = {
       "shopIds": shopIds,
       "fromDate": moment(this.daterange.start.toDate()).format("YYYY-MM-DD"),
-      "toDate": moment(this.daterange.end.toDate()).format("YYYY-MM-DD"),
-      "status": "PENDING"
+      "toDate": moment(this.daterange.end.toDate()).format("YYYY-MM-DD")
     }
 
     this.orders.downloadFullfillmentReport(formData).subscribe((data:any)=>{
-      let csv = 'Name,Title\n';
-      data.forEach(function(row) {
-              csv += row.join(',');
-              csv += "\n";
-      });
-   
+      let csv = data;
       console.log(csv);
       let hiddenElement = document.createElement('a');
       hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
       hiddenElement.target = '_blank';
-      hiddenElement.download = 'people.csv';
+      hiddenElement.download = 'Subscription-Fulfillment.csv';
       hiddenElement.click();
 
     },(err:HttpErrorResponse)=>{
@@ -186,6 +153,40 @@ export class OrdersPage {
     },()=>{
       this.loader.hide();
     })
+  }
+
+
+  onClick(fulfillment) {
+    console.log('...',fulfillment);
+    if(fulfillment.status=="PENDING"){
+      fulfillment.status="FULFILLED";
+     
+    }
+    
+    this.orders.updateFulfillmentStatus(fulfillment).subscribe(data=>{  
+      console.log(data);
+      fulfillment.status="FULFILLED";
+    },(err:HttpErrorResponse)=>{
+      this.errorHandler.error(err);
+      console.log('err');
+      if(err.status==200){
+        console.log(err);
+        
+      }else{
+        fulfillment.status ='PENDING';
+      }
+     
+      this.loader.hide();
+    },()=>{
+      console.log('Completed');
+      this.loader.hide();
+    })
+    
+  }
+
+  onRowSelect(data){
+    console.log(data)
+   this.modal.showSubscriptionDetails(data);
   }
 
 }

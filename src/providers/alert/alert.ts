@@ -1,4 +1,3 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { CatalogProvider } from '../catalog/catalog';
@@ -13,13 +12,14 @@ import { LoaderProvider } from '../loader/loader';
 @Injectable()
 export class AlertProvider {
 
-  dataToBeDeleted : any;
+  dataToBeDeleted: any;
+  productDeleted: boolean;
 
-  constructor(public alert: AlertController,private catalog:CatalogProvider,private laoder:LoaderProvider) {
+  constructor(public alert: AlertController, public catalog: CatalogProvider, public loader: LoaderProvider) {
     console.log('Hello AlertProvider Provider');
   }
 
-  errorAlert(data){
+  errorAlert(data) {
     let alert = this.alert.create({
       title: 'Error',
       subTitle: data,
@@ -28,18 +28,18 @@ export class AlertProvider {
     alert.present();
   }
 
-  csvAlert(){
+  csvAlert() {
     let alert = this.alert.create({
       title: 'Upload Product',
-     inputs :[{
-       name:'file',
-       placeholder:'Upload Product',
-       type:'file'
-     }],
+      inputs: [{
+        name: 'file',
+        placeholder: 'Upload Product',
+        type: 'file'
+      }],
       buttons: [{
         text: 'Cancel',
         role: 'cancel',
-        handler: data => {
+        handler: () => {
           console.log('Cancel clicked');
         }
       },
@@ -53,40 +53,84 @@ export class AlertProvider {
     alert.present();
   }
 
-  deleteConfirmation(shopId,list){
-   
-    let alert = this.alert.create({
-      title: 'Are you sure you want to delete all the items ?',
-      buttons: [{
-        text: 'Cancel',
-        role: 'cancel',
-        handler: data => {
-          console.log('Cancel clicked');
-          data.forEach(item => {
-              item.delete = false;
-          });
-          this.dataToBeDeleted = data;
-        }
-      },
-      {
-        text: 'Yes',
-        handler: data => {
-          console.log(data);
-          list.forEach(item => {
-            list.delete = true
-          });
-          this.dataToBeDeleted = list;
-          this.catalog.addOrUpdateSubscriptionData(shopId,this.dataToBeDeleted).subscribe((data:any)=>{
+  deleteConfirmation(shopId, list) {
+    this.productDeleted = false;
+    let promise = new Promise(((resolve, reject) => {
+      let alert = this.alert.create({
+        title: 'Are you sure you want to delete items ?',
+        buttons: [{
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            reject();
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            console.log(shopId, list);
+            this.productDeleted = true;
+            resolve();
+          }
+        }]
+      });
+      alert.present();
+    }))
 
-          },(err:HttpErrorResponse)=>{
-            this.laoder.hide()
-          },()=>{
-            this.laoder.hide()
-          })
-        }
-      }]
-    });
-    alert.present();
+
+    return promise;
   }
 
+  // Catalog Page - Add Product
+  addNewProduct() {
+    let alert = this.alert.create(
+      {
+        title: 'Edit',
+        inputs: [
+          {
+            name: 'BarcodeId',
+            type: 'text'
+          },
+          {
+            name: 'Sku',
+            type: 'text'
+          },
+          {
+            name: 'Product Name',
+            type: 'text'
+          }, {
+            name: 'Category',
+            type: 'text'
+          }
+        ]
+      }
+    )
+
+    return alert.present();
+  }
+
+  deletePromotion() {
+    let promise = new Promise(((resolve, reject) => {
+      let alert = this.alert.create({
+        title: 'Are you sure you want to delete promotions?',
+        buttons: [{
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            reject();
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            resolve();
+          }
+        }]
+      });
+      alert.present();
+    }))
+
+
+    return promise;
+  }
 }

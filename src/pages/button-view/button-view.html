@@ -6,6 +6,8 @@
 -->
 
 
-
-<button ion-button [color]="value=='FULFILLED'?'dark':'secondary'" [ngClass]="value=='FULFILLED'?'outline':'block'"  (click)="onClick()" >
+<button *ngIf="value=='PENDING'" ion-button [color]="value=='FULFILLED'?'dark':'secondary'"  [disabled]="rowData.disable" (click)="onClick()" >
  <b ion-text color="light">{{value}}</b></button>
+
+ <button ion-button clear *ngIf="value!='PENDING'">
+  <b ion-text color="dark">{{value}}</b></button>

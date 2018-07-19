@@ -9,7 +9,8 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title><ion-icon name="cart"></ion-icon> Orders</ion-title>
+    <ion-title>
+      <ion-icon name="cart"></ion-icon> Orders</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -54,12 +55,15 @@
                 </ion-label>
               </ion-item>
             </ion-col>
-            <ion-col>
-              <button ion-button (click)="search([selectedShopId])" [disabled]="!selectedShopId" margin-top>SEARCH</button>
-              <button ion-button outline color="secondary" (click)="reset()" margin-top>RESET</button>
-            </ion-col>
+
           </ion-row>
 
+          <ion-row>
+            <ion-col col-12>
+              <button ion-button (click)="search([selectedShopId])" [disabled]="!selectedShopId" margin-top>SEARCH</button>
+              <!-- <button ion-button outline color="secondary" (click)="reset()" margin-top>RESET</button> -->
+            </ion-col>
+          </ion-row>
 
         </ion-list>
       </ion-col>
@@ -67,20 +71,80 @@
 
 
     <ion-row padding *ngIf="showfilter==false" id="order-detail">
-      <ion-col >
-          <div class="header-bar">
-              <ion-title ion-text>
-                <ion-icon name="list-box"></ion-icon>&nbsp; Order Detail
-                <button style="float: right" ion-button small round color="secondary" (click)="downloadReport(selectedShopIds)">Download</button>
-                <button style="float: right" ion-button small round color="secondary" (click)="filter()">Filter</button>
-              </ion-title>
-            </div>
-            <ion-card class="content-scrolls">
-        
-              <ng2-smart-table [settings]="settings" [source]="fulfillmentData"></ng2-smart-table>
-            </ion-card>
+      <ion-col>
+        <div class="header-bar">
+          <ion-title ion-text>
+            <ion-icon name="list-box"></ion-icon>&nbsp; Order Detail
+            <button style="float: right" ion-button small round color="secondary" (click)="downloadReport(selectedShopIds)">Download</button>
+            <button style="float: right" ion-button small round color="secondary" (click)="filter()">Filter</button>
+          </ion-title>
+
+        </div>
+        <ion-card class="content-scrolls">
+
+          <p-table #dt [columns]="cols" [value]="fulfillmentData" [responsive]="true" [(selection)]="selectedFulfillment"> 
+            <ng-template pTemplate="caption">
+              <div style="text-align: right">
+                <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value,'contains')"
+                  style="width:auto">
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                </th>
+                <th>Detail</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let col of columns let-fulfillment>
+              <tr>
+                <td><span class="ui-column-title">ID</span>{{fulfillment.subscriptionId}}</td>
+                <td><span class="ui-column-title">Order Id</span>{{fulfillment.subscriptionOrderId}}</td>
+                <td><span class="ui-column-title">Customer Name</span>{{fulfillment.customerName}}</td>
+                <td><span class="ui-column-title">Mobile No</span>{{fulfillment.mobileNumber}}</td>
+                <td><span class="ui-column-title">Delivery Date</span>{{fulfillment.deliveryDate | date}}</td>
+                <td><span class="ui-column-title">Slot</span>{{fulfillment.slot}}</td>
+                <td><span class="ui-column-title">Payment Method</span>{{fulfillment.paymentMethod}}</td>
+                <td><span class="ui-column-title">City</span>{{fulfillment.city}}</td>
+                <td>
+                    <span class="ui-column-title">Order Sent To Merchant</span>
+                  <span *ngIf="fulfillment.orderSentToMerchant">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                  </span>
+                  <span *ngIf="!fulfillment.orderSentToMerchant">
+                    <ion-icon name="close-circle"></ion-icon>
+                  </span>
+                  <td *ngIf="shopList[0].company != 'BIGBAZAAR'">
+                      <span class="ui-column-title">Status</span>
+                    <button *ngIf="fulfillment.status=='PENDING'" ion-button [color]="fulfillment.status=='FULFILLED'?'dark':'secondary'" [disabled]="fulfillment.disable"
+                      (click)="onClick(fulfillment)">
+                      <b ion-text color="light">{{fulfillment.status}}</b>
+                    </button>
+
+                    <button ion-button clear *ngIf="fulfillment.status!='PENDING'">
+                      <b ion-text color="dark">{{fulfillment.status}}</b>
+                    </button>
+                  </td>
+                  <td *ngIf="shopList[0].company == 'BIGBAZAAR'">
+                      <span class="ui-column-title">Status</span>
+                    <span>
+                      <b ion-text color="dark">{{fulfillment.status}}</b>
+                    </span>
+                  </td>
+                  <td>
+                      <span class="ui-column-title">Detail</span>
+                    <button ion-button small clear (click)="onRowSelect(fulfillment)">
+                      <ion-icon name="eye"></ion-icon>View</button>
+                  </td>
+
+              </tr>
+            </ng-template>
+          </p-table>
+        </ion-card>
       </ion-col>
-        
+
     </ion-row>
 
   </ion-grid>
@@ -93,4 +157,3 @@
 
 
 </ion-content>
-

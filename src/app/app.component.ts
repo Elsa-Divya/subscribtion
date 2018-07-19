@@ -5,12 +5,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 import { StorageProvider } from '../providers/storage/storage';
 import { SplitpaneProvider } from '../providers/splitpane/splitpane';
 import { OrdersPage } from '../pages/orders/orders';
 import { DaterangepickerConfig } from 'ng2-daterangepicker';
 import { CatalogPage } from '../pages/catalog/catalog';
+import { PromotionsPage } from '../pages/promotions/promotions';
+import { InventoryPage } from '../pages/inventory/inventory';
 
 @Component({
   templateUrl: 'app.html'
@@ -18,7 +19,7 @@ import { CatalogPage } from '../pages/catalog/catalog';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = LoginPage;
+  rootPage: any;
   admin:any;
   color:any;
  
@@ -29,11 +30,29 @@ export class MyApp {
     this.initializeApp();
     this.admin={}
 
+    this.storage.getItem('admin').then((data:any)=>{
+      if(data!=null){
+        //this.openPage(HomePage)
+        this.admin=data.admin;
+        console.log(this.admin);
+        console.log(data);
+        this.rootPage=HomePage;
+        this.splitPane.setSplitPane(true);
+        
+      }else{
+        this.rootPage = LoginPage;
+      }
+    },() => {
+        this.rootPage = LoginPage;
+      })
+
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Dashboard', component: HomePage,icon:'home',bg_color:'secondary',color:'primary' },
       { title: 'Orders', component: OrdersPage,icon:'cart',bg_color:'secondary',color:'primary' },
-      { title: 'Catalog', component: CatalogPage,icon:'list',bg_color:'secondary',color:'primary' }
+      { title: 'Catalog', component: CatalogPage,icon:'list',bg_color:'secondary',color:'primary' },
+      { title: 'Banners', component: PromotionsPage,icon:'list',bg_color:'secondary',color:'primary' },
+      { title: 'Required Stock', component: InventoryPage,icon:'cube',bg_color:'secondary',color:'primary' }
     ];
 
 
