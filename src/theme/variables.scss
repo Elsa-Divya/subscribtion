@@ -15,6 +15,7 @@ $app-direction: ltr;
 @import "ionic.globals";
 
 
+
 // Shared Variables
 // --------------------------------------------------
 // To customize the look and feel of this app, you can override
@@ -38,8 +39,10 @@ $colors: (
   secondary:  #F79420,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #222,
+  success: rgb(93, 211, 14),
 );
+
 
 .toolbar-background{
   background: color($colors,primary) !important;
@@ -70,6 +73,8 @@ $button-ios-text-color:color($colors,secondary);
 .card-content-ios{
   overflow: auto;
 }
+$toast-ios-background: color($colors,secondary);
+$toast-md-background:color($colors,secondary);
 
 
 // App Material Design Variables
@@ -126,49 +131,20 @@ $button-ios-text-color:color($colors,secondary);
 .smart-table-container{ 
   overflow-x: scroll;
 }
-tbody {
-  text-align:start;
-  font-size: 14px;
-  color: color($colors,dark);
-  
-
- 
-}
-thead>tr{
-  font-size: 14px;
-  color: color($colors,primary);
- 
-}
-tbody>td{
-  margin: 5px;
-}
 
 .content-scrolls{
 overflow: auto;
 }
 
-ng2-smart-table-pager{
-  font-weight: bold;
-  color: color($colors,primary);
 
-}
-nav.ng2-smart-pagination-nav{
-margin: auto;
-}
-
-.pagination>.active>.span{
-  background: color($colors,secondary);
-}
-
-a.ng2-smart-page-link.page-link{
-  margin: auto;
-  padding: 5px;
-  color: color($colors,dark);
-}
 
 .card-content-md{
   overflow: auto;
+ 
 }
+
+
+
 
 // App Windows Variables
 // --------------------------------------------------
@@ -200,3 +176,72 @@ a.ng2-smart-page-link.page-link{
 
 @import "roboto";
 @import "noto-sans";
+
+
+/* 
+  ##Device = Desktops
+  ##Screen = 1281px to higher resolution desktops
+*/
+
+@media (min-width: 1281px) {
+  
+  //CSS
+  
+}
+
+/* 
+  ##Device = Laptops, Desktops
+  ##Screen = B/w 1025px to 1280px
+*/
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  
+  //CSS
+  
+}
+
+/* 
+  ##Device = Tablets, Ipads (portrait)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  
+  //CSS
+  
+}
+
+/* 
+  ##Device = Tablets, Ipads (landscape)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  
+  //CSS
+  
+}
+
+/* 
+  ##Device = Low Resolution Tablets, Mobiles (Landscape)
+  ##Screen = B/w 481px to 767px
+*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+  
+  //CSS
+  
+}
+
+/* 
+  ##Device = Most of the Smartphones Mobiles (Portrait)
+  ##Screen = B/w 320px to 479px
+*/
+
+@media (min-width: 320px) and (max-width: 480px) {
+  
+  .shop-text p{
+    font-size: 1em !important;
+  }
+  
+}

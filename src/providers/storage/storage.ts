@@ -10,10 +10,13 @@ import { Platform } from 'ionic-angular';
 */
 @Injectable()
 export class StorageProvider {
-
+admin:any;
+clientType:any;
   constructor(public localStorage:Storage,public platform:Platform) {
     console.log('Hello StorageProvider Provider');
   }
+
+  
 
   setItem(key,value){
    
@@ -21,16 +24,38 @@ export class StorageProvider {
         
   }
 
-  getItem(key){
-
-    
-        return this.localStorage.get(key).then((val:string)=>{
+   async getItem(key){
+   
+        return await this.localStorage.get(key).then((val:string)=>{
+            this.admin = val;
           return val
         });
 
 
    
   }
+
+ async getValue(key){
+
+    let promise = new Promise((resolve,reject)=>{
+
+        return this.localStorage.get(key).then((val:string)=>{
+            resolve(val)
+        },(err:any)=>{
+            reject(err)
+        });
+    })
+    
+return await promise;
+
+
+}
+
+getAdmin(){
+    return this.getValue('admin').then((data:any)=>{
+        return data;
+    })
+}
 
   clearItem(){
     
@@ -39,4 +64,20 @@ export class StorageProvider {
 
     
   }
+  
+  getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 }

@@ -1,0 +1,18 @@
+page-promotions {
+    .disabled{
+        background-color: gray;
+        opacity: 0.5;
+    }
+
+    .add-promotion .card-header{
+        background: color($colors,primary);
+    }
+
+    .show-promotion .card-header{
+        background: color($colors,secondary)
+    }
+
+
+
+    
+}

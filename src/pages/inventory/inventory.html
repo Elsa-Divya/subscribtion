@@ -1,0 +1,140 @@
+<!--
+  Generated template for the InventoryPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Inventory</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content no-padding>
+
+  <ion-grid>
+    <div class="header-bar">
+      <ion-title ion-text>
+        <ion-icon name="search"></ion-icon>&nbsp; Select Shop</ion-title>
+    </div>
+    <ion-row padding>
+      <ion-col col-md-4 col-lg-4 col-sm-12 col-xs-12>
+        <div>
+          <p class="sub-heading" ion-text color="secondary">
+            <ion-icon name="calendar"></ion-icon> &nbsp; Select Date</p>
+        </div>
+        <div class="form-group">
+          <div class="input-group" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event)">
+            <span class="form-control uneditable-input">
+              {{ daterange.start | date:'dd/MM/yyyy' }} - {{ daterange.end| date:'dd/MM/yyyy' }}
+            </span>
+            <span class="input-group-btn">
+              <a type="button" class="btn btn-default">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </a>
+            </span>
+          </div>
+
+        </div>
+      </ion-col>
+      <ion-col col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding>
+        <ion-list radio-group [(ngModel)]="shopSelected">
+
+          <ion-row>
+            <ion-col col-lg-6 col-md-6 col-sm-12 *ngFor="let shop of shopList">
+              <ion-item>
+                <ion-radio style="margin: 0px;padding: 1px;" item-start value="{{shop.shopId}}"></ion-radio>
+                <ion-label>
+                  <p class="shop-text" ion-text text-left>{{shop.originalStoreNumber}}- {{shop.shopName}}, {{shop.shopAddress}} , {{shop.shopCity}}-[{{shop.shopId}}]
+                  </p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col col-12>
+              <button margin-left ion-button (click)="viewInventoryFlag = true; viewInventory(shopSelected)" [disabled]="!shopSelected"
+                margin-top>View Inventory</button>
+            </ion-col>
+          </ion-row>
+
+
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <div class="header-bar">
+      <ion-title ion-text>
+        <ion-icon name="list-box"></ion-icon>&nbsp; Inventory Details
+      </ion-title>
+    </div>
+
+
+
+    <ion-row justify-content-center padding>
+      <ion-col col-12>
+        <button hideWhen="android,ios" [disabled]="!viewInventoryFlag" ion-button small round (click)="dt.exportCSV()">
+          <ion-icon name="cloud-download"></ion-icon>&nbsp; Download Report</button>
+        <button float-left showWhen="android,ios" [disabled]="!viewInventoryFlag" ion-button small round outline (click)="dt.exportCSV()">
+          <ion-icon name="cloud-download"></ion-icon>&nbsp;Download</button>
+       
+      </ion-col>
+
+      <!-- Filter for android,ios-->
+
+      <ion-col col-12>
+        <p-table #dt [columns]="cols" [value]="inventoryList" [paginator]="true" [rows]="50">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">
+              <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                style="width:50%">
+            </div>
+            
+          </ng-template>
+          <ng-template pTemplate="colgroup" let-columns>
+            <colgroup>
+              <col *ngFor="let col of columns" style="width:150px">
+            </colgroup>
+          </ng-template>
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns">
+                {{col.header}}
+              </th>
+            </tr>
+            <tr >
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <p-dropdown   *ngSwitchCase="'category'" [options]="category" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value, col.field, 'equals')"></p-dropdown>
+                <input *ngSwitchCase="'subCategory'" pInputText type="text" (input)="dt.filter($event.target.value, col.field, col.filterMatchMode)">
+                <p-dropdown   *ngSwitchCase="'apartmentName'" [options]="groupByApartment" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value, col.field, 'equals')"></p-dropdown>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+              <td *ngFor="let col of columns">
+                {{rowData[col.field]}}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="summary">
+            There are {{inventoryList?.length}} items
+          </ng-template>
+        </p-table>
+
+
+
+
+
+      </ion-col>
+
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

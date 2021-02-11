@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-title>
+        Errors
+    </ion-title>
+</ion-header>
+<ion-content padding>
+    <ion-col col-lg-12 col-md-12 col-sm-12 col-xs-12>
+        <ion-item *ngFor="let error of errors">
+            <ion-label>
+                <p ion-text text-left>{{error}}</p>
+            </ion-label>
+        </ion-item>
+    </ion-col>
+
+    <ion-col>
+        <ion-list *ngIf="productList?.length>0">
+            <h3>{{catalogError.message}}</h3>
+            <i>These barcode are not mapped to selected store</i>
+            <ion-item *ngFor="let product of productList">
+               
+                    
+                        <ion-label >Barcode ID:</ion-label>
+                        <ion-input type="text" [(ngModel)]="product.barcodeId" readonly></ion-input>
+                   
+                   
+            
+
+            </ion-item>
+        </ion-list>
+        <ion-list *ngIf="productList?.length<=0">
+            <ion-item >
+                    <h3>{{catalogError.message}}</h3>
+            </ion-item>
+        </ion-list>
+    </ion-col>
+
+</ion-content>
+<ion-footer>
+    <button ion-button block (click)="close()">Close</button>
+</ion-footer>

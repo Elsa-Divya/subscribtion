@@ -7,81 +7,342 @@
 <ion-header>
 
   <ion-navbar>
-      <button ion-button menuToggle>
-          <ion-icon name="menu"></ion-icon>
-        </button>
+
     <ion-title>
-      <ion-icon name="list">&nbsp;Select Shop</ion-icon>
+      <ion-icon name="list">&nbsp;Catalog</ion-icon>
     </ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
-  <div class="header-bar">
-        <ion-title ion-text>
-          <ion-icon name="list"></ion-icon>&nbsp; Catalog</ion-title>
+<ion-content no-padding>
+  <ion-grid>
+    <div class="header-bar">
+      <ion-title ion-text>
+        <ion-icon name="search"></ion-icon>&nbsp; Select Shop</ion-title>
     </div>
-  <ion-row>
-    <!-- <ion-col col-lg-6 col-md-6 col-sm-12 *ngFor="let shop of shopList">
-      <ion-list radio-group [(ngModel)]="shopSelected">
-        <ion-item>
-          <ion-radio item-start value="{{shop.shopId}}"></ion-radio>
-          <ion-label>
-            <p>{{shop.shopName}}, {{shop.shopLocality}} , {{shop.shopCity}} </p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-col> -->
-    <ion-col col-lg-12 col-md-12 col-sm-12 col-xs-12>
+    <ion-row padding>
+      <ion-col col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding>
         <ion-list radio-group [(ngModel)]="shopSelected">
 
           <ion-row>
             <ion-col col-lg-6 col-md-6 col-sm-12 *ngFor="let shop of shopList">
               <ion-item>
-                <ion-radio item-start value="{{shop.shopId}}"></ion-radio>
+                <ion-radio style="margin: 0px;padding: 1px;" item-start value="{{shop.shopId}}"></ion-radio>
                 <ion-label>
-                  <p ion-text text-left>{{shop.shopName}}, {{shop.shopLocality}} , {{shop.shopCity}} </p>
+                  <p class="shop-text" ion-text text-left>{{shop.originalStoreNumber}}- {{shop.shopName}}, {{shop.shopAddress}} , {{shop.shopCity}}-[{{shop.shopId}}]
+                    </p>
                 </ion-label>
               </ion-item>
             </ion-col>
-            <ion-col>
-              <button margin-left ion-button  (click)="viewProduct(shopSelected)" [disabled]="!shopSelected" margin-top>View Product</button>
+            <ion-col col-12>
+              <button margin-left ion-button (click)="viewProductSelected = true; viewProduct(shopSelected)" [disabled]="!shopSelected"
+                margin-top>View Products</button>
             </ion-col>
           </ion-row>
 
 
         </ion-list>
       </ion-col>
-  </ion-row>
-
-
-
-  <ion-grid>
-      <div class="header-bar">
-          <ion-title ion-text>
-            <ion-icon name="list-box"></ion-icon>&nbsp; Product Details
-            <button style="float: right" ion-button small round color="secondary" [disabled]="!shopSelected" (click)="uploadCatalog()">Upload Catalog</button>
-            <button style="float: right" ion-button small round outline color="secondary" [disabled]="!shopSelected" (click)="save()">Save Changes</button>
-            <button style="float: right" ion-button small round color="secondary" (click)="delete()">Delete All</button>
-          </ion-title>
-        </div>
-    <ion-row id="viewProduct">
-
-      <!-- <ion-col col-12>
-        <ion-searchbar (ionInput)="search"></ion-searchbar>
-      </ion-col> -->
-      <ion-col>
-        <ion-card>
-          <ng2-smart-table [settings]="settings" [source]="productList" (deleteConfirm)="onDeleteConfirm($event)" (editConfirm)="onSaveConfirm($event)"
-            (createConfirm)="onCreateConfirm($event)"></ng2-smart-table>
-        </ion-card>
-      </ion-col>
     </ion-row>
-
   </ion-grid>
 
 
 
+
+
+  <ion-grid>
+    <div class="header-bar">
+      <ion-title ion-text>
+        <ion-icon name="list-box"></ion-icon>&nbsp; Product Details
+      </ion-title>
+    </div>
+
+    <ion-row padding id="viewProduct">
+      <ion-col hideWhen="android,ios">
+        <button ion-button small round color="secondary" [disabled]="!viewProductSelected" (click)="uploadCatalog=!uploadCatalog">
+          <ion-icon icon-left name="cloud-upload"></ion-icon> &nbsp;Upload Catalog</button>
+
+        <button ion-button round small [disabled]="!viewProductSelected" (click)="deleteAll()">
+          <ion-icon icon-left name="trash"></ion-icon>&nbsp;Delete Catalog</button>
+
+        <button ion-button small round color="primary" [disabled]="!viewProductSelected" (click)="showDialogToAdd()">
+          <ion-icon name="add-circle" icon-left></ion-icon> &nbsp;Add</button>
+
+
+        <button ion-button small round color="secondary" [disabled]="!viewProductSelected || !activateDeleteButton" (click)="deleteSelected()">
+          <ion-icon name="trash" icon-left></ion-icon>&nbsp; Delete</button>
+
+
+        <button ion-button small round outline color="secondary" [disabled]="!viewProductSelected" (click)="refresh()">
+          <ion-icon name="refresh" icon-left></ion-icon> &nbsp;Refresh</button>
+
+
+        <button ion-button small round outline color="secondary" [disabled]="(!viewProductSelected || errorData.length==0)" (click)="presentErrorModal()">
+          <ion-icon name="information-circle" icon-left></ion-icon> &nbsp;Errors</button>
+
+
+
+      </ion-col>
+      <ion-col showWhen="android,ios" no-paading>
+        <ion-row>
+          <ion-col col-6>
+            <button style="width:180px" ion-button small round color="secondary" [disabled]="!viewProductSelected" (click)="uploadCatalog=!uploadCatalog">
+              <ion-icon icon-left name="cloud-upload"></ion-icon> &nbsp;Upload Catalog</button>
+          </ion-col>
+          <ion-col col-6>
+            <button style="width:180px" ion-button round small (click)="deleteAll()">
+              <ion-icon icon-left name="trash"></ion-icon>Delete Catalog</button>
+          </ion-col>
+          <ion-col col-6>
+            <button style="width:180px" ion-button small round [disabled]="!viewProductSelected" (click)="showDialogToAdd()">
+              <ion-icon name="add-circle" icon-left></ion-icon> &nbsp;Add</button>
+          </ion-col>
+          <ion-col col-6>
+            <button style="width:180px" ion-button small round color="secondary" [disabled]="!viewProductSelected || !activateDeleteButton"
+              (click)="deleteSelected()">
+              <ion-icon name="trash" icon-left></ion-icon>&nbsp;Delete</button>
+          </ion-col>
+          <ion-col col-6>
+            <button style="width:180px" ion-button small round outline color="secondary">
+              <ion-icon name="information-circle" icon-left></ion-icon> &nbsp;Error</button>
+          </ion-col>
+          <ion-col col-6>
+            <button style="width:180px" ion-button small round color="secondary">
+              <ion-icon name="refresh" icon-left></ion-icon> &nbsp;Refresh</button>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+
+      <ion-col *ngIf="uploadCatalog">
+        <p-fileUpload name="myfile[]" customUpload="true" accept=".csv" (uploadHandler)="myUploader($event)">
+          <ng-template pTemplate="content">
+            <a href="https://storage.cloud.google.com/perpule-1248.appspot.com/04082017004336.149_c1290960_2096_Item.csv">
+              <button ion-button small outline>Sample CSV</button>
+            </a>
+          </ng-template>
+        </p-fileUpload>
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row padding justify-content-center *ngIf="productList.length==0" class="no-promotion">
+      <ion-col col-md-4 col-lg-4 col-sm-12 col-xs-12 align-self-center>
+        <ion-thumbnail item-start>
+          <img src="assets/imgs/search-128.png" style="margin: auto" />
+          <p ion-text text-center text-uppercase>Specify Search Type</p>
+        </ion-thumbnail>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="productList.length>0">
+      <ion-col>
+
+        <p-table #dt [columns]="cols" [value]="productList" sortMode="multiple" selectionMode="multiple" [(selection)]="selectedProduct"
+          [paginator]="true" [rows]="50" [scrollable]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+          [scrollable]="true">
+          <ng-template pTemplate="colgroup" let-columns>
+            <colgroup>
+              <col *ngFor="let col of columns" style="width:150px">
+            </colgroup>
+          </ng-template>
+          <ng-template pTemplate="caption">
+            <div style="text-align: left">
+              <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                style="max-width:50%">
+              <button ion-button small round (click)="dt.exportCSV()">
+                <ion-icon name="cloud-download"></ion-icon>&nbsp; Download Catalog</button>
+            </div>
+            <div style="text-align: right">
+
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+             
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+              </th>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+              <td>
+
+                <button ion-button small (click)="deleteProduct(rowData)" pTooltip="Delete Product" tooltipPosition="top">
+                  <ion-icon name="trash"></ion-icon>
+                </button>
+                <button ion-button small (click)="editProduct(rowData)" pTooltip="Edit Product" tooltipPosition="top">
+                  <ion-icon name="create"></ion-icon>
+                </button>
+              </td>
+              <td>{{rowData.shopId}}</td>
+              <td>{{rowData.barcodeId}}</td>
+              <td>{{rowData.sku}}</td>
+              <td> {{rowData.name}}</td>
+              <td >
+                <ion-item *ngIf="rowData.image!=null && rowData.image!=''">
+                  <ion-thumbnail item-start>
+
+                    <img src="{{rowData.image}}">
+                  </ion-thumbnail>
+                </ion-item>
+                <span *ngIf="rowData.image==null || rowData.image==''">N/A</span>
+              </td>
+              <!-- <td *ngIf="rowData.image==null || rowData.image==''">
+                N/A
+
+
+              </td> -->
+              <td> {{rowData.category}}</td>
+              <td> {{rowData.subCategory}}</td>
+              <!-- <td *ngIf="rowData.categoryImage==null || rowData.categoryImage==''">N/A</td> -->
+              <td >
+                <ion-item *ngIf="rowData.categoryImage!=null && rowData.categoryImage!=''">
+                  <ion-thumbnail item-start>
+                    <img src="{{rowData.categoryImage}}">
+                  </ion-thumbnail>
+                </ion-item>
+                <!-- <a target="_blank" href="{{rowData.categoryImage}}">View Image</a> -->
+                <span *ngIf="rowData.categoryImage==null || rowData.categoryImage==''">N/A</span>
+              </td>
+              <td>Rs.{{rowData.amount}}</td>
+              <td>
+                <ion-icon name="checkmark-circle" color="secondary" *ngIf="rowData.isPerishable"></ion-icon>
+                <ion-icon name="close-circle" *ngIf="!rowData.isPerishable"></ion-icon>
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="summary">
+            {{productList?.length}} products
+          </ng-template>
+        </p-table>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+
+
+
 </ion-content>
+<p-dialog header="Product Details" [(visible)]="displayDialog" [width]="600">
+
+  <div class="ui-g ui-fluid" *ngIf="product">
+
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="barcodeId">
+          <span class="red">*</span> BarcodeId</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="number" id="barcodeId" [(ngModel)]="product.barcodeId" pattern="^[0-9]*$" required/>
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="sku">
+          <span class="red">*</span>Sku</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="sku" [(ngModel)]="product.sku" pattern="^[0-9]*$" required/>
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="name">Product Name</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="name" [(ngModel)]="product.name" />
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="image">Image Url</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="image" [(ngModel)]="product.image" />
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="category">
+          <span class="red">*</span>Category</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="category" [(ngModel)]="product.category" required/>
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="subCategory">
+          <span class="red">*</span>Sub Category</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="subCategory" [(ngModel)]="product.subCategory" required/>
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="catImg">Category Image</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="catImg" [(ngModel)]="product.categoryImage" />
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="amount">Amount</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="number" id="amount" [(ngModel)]="product.amount" step="0.1" required/>
+      </div>
+    </div>
+    <div class="ui-g-12">
+      <div class="ui-g-4">
+        <label for="color">Perishable Item?</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="checkbox" id="color" [(ngModel)]="product.isPerishable" />
+      </div>
+    </div>
+    <div class="ui-g-12" style="display: none">
+      <div class="ui-g-4">
+        <label for="color">delete</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="checkbox" id="color" [(ngModel)]="product.delete" />
+      </div>
+    </div>
+    <div class="ui-g-12" style="display: none">
+      <div class="ui-g-4">
+        <label for="color">shopid</label>
+      </div>
+      <div class="ui-g-8">
+        <input type="text" id="color" [(ngModel)]="product.shopId" />
+      </div>
+    </div>
+
+  </div>
+
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix" style="float: left;">
+      <button ion-button (click)="save()">Save</button>
+    </div>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix" style="float: left;">
+      <button ion-button (click)="displayDialog=false">Close</button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<p-growl [(value)]="msgs"></p-growl>
